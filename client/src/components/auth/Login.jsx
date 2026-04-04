@@ -11,9 +11,14 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
-  const [resetEmail, setResetEmail] = useState('');
-  const [resetMessage, setResetMessage] = useState('');
-  const { login } = useAuth();
+  const [forgotStep, setForgotStep] = useState(1);
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [resetOtp, setResetOtp] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [otpPreviewUrl, setOtpPreviewUrl] = useState('');
+  const { login, forgotPassword, resetPassword } = useAuth();
   const navigate = useNavigate();
   
   // Captcha states
@@ -52,6 +57,12 @@ const Login = () => {
       return;
     }
     
+    if (!captcha?.captchaId) {
+      toast.error('Captcha not loaded. Please wait or refresh.');
+      loadCaptcha();
+      return;
+    }
+
     setLoading(true);
     const result = await login(email, password, captcha.captchaId, captchaAnswer);
     
@@ -63,6 +74,58 @@ const Login = () => {
       loadCaptcha(); // Refresh captcha on failure
     }
     setLoading(false);
+  };
+
+  const closeForgotModal = () => {
+    setShowForgotPassword(false);
+    setForgotStep(1);
+    setForgotEmail('');
+    setResetOtp('');
+    setNewPassword('');
+    setConfirmNewPassword('');
+    setOtpPreviewUrl('');
+  };
+
+  const handleSendResetCode = async (e) => {
+    e.preventDefault();
+    if (!forgotEmail.trim()) {
+      toast.error('Enter your email');
+      return;
+    }
+    setForgotLoading(true);
+    const result = await forgotPassword(forgotEmail.trim());
+    setForgotLoading(false);
+    if (result.success) {
+      if (result.previewUrl) setOtpPreviewUrl(result.previewUrl);
+      setForgotStep(2);
+    }
+  };
+
+  const handleResetPasswordSubmit = async (e) => {
+    e.preventDefault();
+    if (newPassword.length < 6) {
+      toast.error('Password must be at least 6 characters');
+      return;
+    }
+    if (newPassword !== confirmNewPassword) {
+      toast.error('Passwords do not match');
+      return;
+    }
+    if (!resetOtp.trim()) {
+      toast.error('Enter the code from your email');
+      return;
+    }
+    setForgotLoading(true);
+    const result = await resetPassword({
+      email: forgotEmail.trim(),
+      otp: resetOtp.trim(),
+      newPassword
+    });
+    setForgotLoading(false);
+    if (result.success) {
+      closeForgotModal();
+      loadCaptcha();
+    }
   };
 
   return (
@@ -173,6 +236,123 @@ const Login = () => {
           </p>
         </div>
       </motion.div>
+
+      <AnimatePresence>
+        {showForgotPassword && (
+          <motion.div
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={closeForgotModal}
+          >
+            <motion.div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="forgot-title"
+              className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto"
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(ev) => ev.stopPropagation()}
+            >
+              <div className="flex justify-between items-start mb-4">
+                <h3 id="forgot-title" className="text-xl font-bold text-gray-900">
+                  Reset password
+                </h3>
+                <button
+                  type="button"
+                  onClick={closeForgotModal}
+                  className="text-gray-500 hover:text-gray-800 text-2xl leading-none"
+                  aria-label="Close"
+                >
+                  ×
+                </button>
+              </div>
+
+              {forgotStep === 1 && (
+                <form onSubmit={handleSendResetCode} className="space-y-4">
+                  <p className="text-sm text-gray-600">
+                    Enter the email for your account. We will send a 6-digit code to reset your password.
+                  </p>
+                  <input
+                    type="email"
+                    value={forgotEmail}
+                    onChange={(e) => setForgotEmail(e.target.value)}
+                    placeholder="you@example.com"
+                    className="input-field w-full"
+                    required
+                  />
+                  <button
+                    type="submit"
+                    disabled={forgotLoading}
+                    className="w-full btn-primary py-3"
+                  >
+                    {forgotLoading ? 'Sending…' : 'Send code'}
+                  </button>
+                </form>
+              )}
+
+              {forgotStep === 2 && (
+                <form onSubmit={handleResetPasswordSubmit} className="space-y-4">
+                  <p className="text-sm text-gray-600">
+                    Code sent to <strong>{forgotEmail}</strong>. Enter the code and your new password.
+                  </p>
+                  {otpPreviewUrl && (
+                    <p className="text-xs text-amber-800 bg-amber-50 p-2 rounded">
+                      Dev email: open{' '}
+                      <a href={otpPreviewUrl} target="_blank" rel="noreferrer" className="underline">
+                        preview link
+                      </a>{' '}
+                      to read the OTP (test SMTP).
+                    </p>
+                  )}
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    value={resetOtp}
+                    onChange={(e) => setResetOtp(e.target.value)}
+                    placeholder="6-digit code"
+                    className="input-field w-full"
+                    required
+                  />
+                  <input
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="New password (min 6 characters)"
+                    className="input-field w-full"
+                    required
+                    minLength={6}
+                  />
+                  <input
+                    type="password"
+                    value={confirmNewPassword}
+                    onChange={(e) => setConfirmNewPassword(e.target.value)}
+                    placeholder="Confirm new password"
+                    className="input-field w-full"
+                    required
+                  />
+                  <button
+                    type="submit"
+                    disabled={forgotLoading}
+                    className="w-full btn-primary py-3"
+                  >
+                    {forgotLoading ? 'Updating…' : 'Update password'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setForgotStep(1)}
+                    className="w-full text-sm text-blue-600 hover:underline"
+                  >
+                    ← Use a different email
+                  </button>
+                </form>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

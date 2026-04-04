@@ -1,5 +1,10 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { register as apiRegister, login as apiLogin, forgotPassword as apiForgotPassword } from '../services/api';
+import {
+  register as apiRegister,
+  login as apiLogin,
+  forgotPassword as apiForgotPassword,
+  resetPassword as apiResetPassword
+} from '../services/api';
 import toast from 'react-hot-toast';
 
 export const AuthContext = createContext(null);
@@ -59,9 +64,24 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await apiForgotPassword({ email });
       toast.success(response.data.message);
+      return {
+        success: true,
+        previewUrl: response.data.previewUrl
+      };
+    } catch (error) {
+      const message = error.response?.data?.message || 'Failed to send reset code';
+      toast.error(message);
+      return { success: false, error: message };
+    }
+  };
+
+  const resetPassword = async ({ email, otp, newPassword }) => {
+    try {
+      const response = await apiResetPassword({ email, otp, newPassword });
+      toast.success(response.data.message);
       return { success: true };
     } catch (error) {
-      const message = error.response?.data?.message || 'Failed to send reset link';
+      const message = error.response?.data?.message || 'Could not reset password';
       toast.error(message);
       return { success: false, error: message };
     }
@@ -82,7 +102,8 @@ export const AuthProvider = ({ children }) => {
       register, 
       login, 
       logout, 
-      forgotPassword, 
+      forgotPassword,
+      resetPassword,
       isAuthenticated: !!user 
     }}>
       {children}

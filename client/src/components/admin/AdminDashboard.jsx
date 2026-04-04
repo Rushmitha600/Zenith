@@ -41,13 +41,13 @@ const AdminDashboard = () => {
       const token = localStorage.getItem('token');
       const headers = { Authorization: `Bearer ${token}` };
       
-      const statsRes = await axios.get('http://localhost:5000/api/admin/stats', { headers });
+      const statsRes = await axios.get(`${API_URL}/admin/stats`, { headers });
       setStats(statsRes.data);
       
       const usersRes = await axios.get(`${API_URL}/admin/users`, { headers });
       setUsers(usersRes.data);
       
-      const claimsRes = await axios.get('http://localhost:5000/api/admin/claims', { headers });
+      const claimsRes = await axios.get(`${API_URL}/admin/claims`, { headers });
       setClaims(claimsRes.data);
       
     } catch (error) {
