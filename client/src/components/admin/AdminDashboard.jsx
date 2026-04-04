@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { API_URL } from '../../config/api';
 import { useTheme } from '../../contexts/ThemeContext';
 
 const AdminDashboard = () => {
@@ -43,7 +44,7 @@ const AdminDashboard = () => {
       const statsRes = await axios.get('http://localhost:5000/api/admin/stats', { headers });
       setStats(statsRes.data);
       
-      const usersRes = await axios.get('http://localhost:5000/api/admin/users', { headers });
+      const usersRes = await axios.get(`${API_URL}/admin/users`, { headers });
       setUsers(usersRes.data);
       
       const claimsRes = await axios.get('http://localhost:5000/api/admin/claims', { headers });
@@ -65,7 +66,7 @@ const AdminDashboard = () => {
   const handleApproveClaim = async (claimId) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.put(`http://localhost:5000/api/admin/claims/${claimId}/approve`, {}, {
+      await axios.put(`${API_URL}/admin/claims/${claimId}/approve`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       toast.success('Claim approved!');
@@ -78,7 +79,7 @@ const AdminDashboard = () => {
   const handleRejectClaim = async (claimId) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.put(`http://localhost:5000/api/admin/claims/${claimId}/reject`, {}, {
+      await axios.put(`${API_URL}/admin/claims/${claimId}/reject`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       toast.success('Claim rejected!');

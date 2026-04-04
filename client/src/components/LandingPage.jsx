@@ -19,7 +19,7 @@ const LandingPage = () => {
     
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:5000/api/tracking/weather?city=${cityName}`);
+      const response = await axios.get(`${API_URL}/tracking/weather?city=${cityName}`);
       setWeather(response.data);
     } catch (error) {
       console.error('Weather fetch error:', error);

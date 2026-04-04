@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import axios from 'axios';
+import { API_URL } from '../../config/api';
 
 const AdminRegister = () => {
   const [loading, setLoading] = useState(false);
@@ -74,7 +75,7 @@ const AdminRegister = () => {
     
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/admin/register', {
+      const response = await axios.post(`${API_URL}/auth/admin/register`, {
         name: formData.name,
         email: formData.email,
         phone: formData.phone,

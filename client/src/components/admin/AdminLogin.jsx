@@ -4,6 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import axios from 'axios';
+import { API_URL } from '../../config/api';
 
 const AdminLogin = () => {
   const [email, setEmail] = useState('');
@@ -23,7 +24,7 @@ const AdminLogin = () => {
   const loadCaptcha = async () => {
     setCaptchaLoading(true);
     try {
-      const response = await axios.get('http://localhost:5000/api/auth/captcha');
+      const response = await axios.get(`${API_URL}/auth/captcha`);
       setCaptcha(response.data);
       setCaptchaAnswer('');
     } catch (error) {
@@ -44,7 +45,7 @@ const AdminLogin = () => {
   setLoading(true);
   
   try {
-    const response = await axios.post('http://localhost:5000/api/auth/admin/login', {
+    const response = await axios.post(`${API_URL}/auth/admin/login`, {
       email,
       password
     });

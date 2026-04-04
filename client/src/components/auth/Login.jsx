@@ -4,6 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import axios from 'axios';
+import { API_URL } from '../../config/api';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -28,7 +29,7 @@ const Login = () => {
   const loadCaptcha = async () => {
     setCaptchaLoading(true);
     try {
-      const response = await axios.get('http://localhost:5000/api/auth/captcha');
+      const response = await axios.get(`${API_URL}/auth/captcha`);
       setCaptcha(response.data);
       setCaptchaAnswer('');
     } catch (error) {
