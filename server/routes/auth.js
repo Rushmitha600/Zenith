@@ -96,7 +96,12 @@ router.post('/register', async (req, res) => {
       deliveryLocations
     } = req.body;
 
-    if (!emailVerified) {
+    const verified =
+      emailVerified === true ||
+      emailVerified === 'true' ||
+      emailVerified === 1 ||
+      emailVerified === '1';
+    if (!verified) {
       return res.status(400).json({ message: 'Please verify your email first' });
     }
 
@@ -110,6 +115,35 @@ router.post('/register', async (req, res) => {
     if (String(password).length < 6) {
       return res.status(400).json({ message: 'Password must be at least 6 characters' });
     }
+
+    const safeBank =
+      bankDetails && typeof bankDetails === 'object'
+        ? {
+            accountNumber: String(bankDetails.accountNumber ?? '').slice(0, 64),
+            ifscCode: String(bankDetails.ifscCode ?? '').slice(0, 20),
+            bankName: String(bankDetails.bankName ?? '').slice(0, 120),
+            accountHolderName: String(bankDetails.accountHolderName ?? '').slice(0, 120),
+            upiId: String(bankDetails.upiId ?? '').slice(0, 120)
+          }
+        : {};
+
+    const safeLocation =
+      currentLocation && typeof currentLocation === 'object'
+        ? {
+            city: String(currentLocation.city ?? '').slice(0, 100),
+            area: String(currentLocation.area ?? '').slice(0, 100),
+            address: String(currentLocation.address ?? '').slice(0, 500)
+          }
+        : { city: '', area: '', address: '' };
+
+    const safeDelivery = (Array.isArray(deliveryLocations) ? deliveryLocations : [])
+      .filter((loc) => loc && typeof loc === 'object')
+      .map((loc) => ({
+        name: String(loc.name ?? '').slice(0, 200),
+        city: String(loc.city ?? '').slice(0, 100),
+        area: String(loc.area ?? '').slice(0, 100),
+        pincode: String(loc.pincode ?? '').slice(0, 20)
+      }));
 
     const existingUser = await User.findOne({
       $or: [{ email: cleanEmail }, { phone: cleanPhone }]
@@ -130,9 +164,9 @@ router.post('/register', async (req, res) => {
       aadharNumber: aadharNumber ? String(aadharNumber).trim() : '',
       panNumber: panNumber ? String(panNumber).trim().toUpperCase() : '',
       gigWorkerId: gigWorkerId ? String(gigWorkerId).trim() : '',
-      bankDetails: bankDetails && typeof bankDetails === 'object' ? bankDetails : undefined,
-      currentLocation: currentLocation && typeof currentLocation === 'object' ? currentLocation : undefined,
-      deliveryLocations: Array.isArray(deliveryLocations) ? deliveryLocations : [],
+      bankDetails: safeBank,
+      currentLocation: safeLocation,
+      deliveryLocations: safeDelivery,
       role: 'worker',
       isEmailVerified: true
     });
@@ -172,7 +206,21 @@ router.post('/register', async (req, res) => {
         .join(' ');
       return res.status(400).json({ message: msg || 'Validation failed' });
     }
-    res.status(500).json({ message: 'Server error' });
+    if (
+      error.name === 'MongoServerSelectionError' ||
+      error.name === 'MongoNetworkError' ||
+      String(error.message || '').includes('buffering timed out')
+    ) {
+      return res.status(503).json({
+        message: 'Database temporarily unavailable. Check MONGODB_URI and Atlas network access.'
+      });
+    }
+    const detail =
+      process.env.EXPOSE_ERROR_DETAILS === 'true' ? error.message : undefined;
+    res.status(500).json({
+      message: 'Server error',
+      ...(detail && { detail })
+    });
   }
 });
 
