@@ -29,6 +29,10 @@ app.get('/api/health', (req, res) => {
     mongo: labels[mongoState] ?? 'unknown',
     mongoReadyState: mongoState,
     hasMongoUri: Boolean(process.env.MONGODB_URI?.trim()),
+    hint:
+      mongoState !== 1
+        ? 'Add MONGODB_URI in Render → Environment (Atlas string). Atlas → Network Access → allow 0.0.0.0/0'
+        : undefined,
     timestamp: new Date().toISOString()
   });
 });
@@ -40,14 +44,13 @@ app.get('/api/test', (req, res) => {
 function requireMongo(req, res, next) {
   if (mongoose.connection.readyState !== 1) {
     return res.status(503).json({
-      message: 'Database not connected. Set MONGODB_URI in Render environment and redeploy.',
+      message: 'Database not connected. Set MONGODB_URI in Render and redeploy.',
       mongoReadyState: mongoose.connection.readyState
     });
   }
   next();
 }
 
-// Tracking uses OpenWeather only — no Mongo
 app.use('/api/tracking', trackingRoutes);
 
 app.use('/api/auth', requireMongo, authRoutes);
@@ -57,31 +60,39 @@ app.use('/api/admin', requireMongo, adminRoutes);
 
 const PORT = process.env.PORT || 5000;
 
-async function start() {
-  const MONGODB_URI = process.env.MONGODB_URI?.trim();
-
-  if (!MONGODB_URI) {
-    console.error('FATAL: MONGODB_URI is missing. In Render: Environment → add MONGODB_URI (MongoDB Atlas connection string).');
-    process.exit(1);
+async function connectMongo() {
+  const uri = process.env.MONGODB_URI?.trim();
+  if (!uri) {
+    console.error(
+      '⚠️  MONGODB_URI is not set. Render → Environment → add your MongoDB Atlas connection string.'
+    );
+    console.error('   Server is running; login/register will return 503 until DB is configured.');
+    return;
   }
 
   mongoose.set('strictQuery', true);
 
   try {
-    await mongoose.connect(MONGODB_URI, {
-      serverSelectionTimeoutMS: 20000
+    await mongoose.connect(uri, {
+      serverSelectionTimeoutMS: 25000
     });
     console.log('✅ MongoDB connected');
   } catch (err) {
-    console.error('❌ MongoDB failed:', err.message);
-    console.error('→ Atlas: Network Access must allow 0.0.0.0/0 (or Render outbound IPs)');
-    console.error('→ URI: user/password must be URL-encoded if they contain special chars');
-    process.exit(1);
+    console.error('❌ MongoDB connection failed:', err.message);
+    console.error('   Check: Atlas Network Access (0.0.0.0/0), user/password in URI (URL-encode special chars).');
+    console.error('   Server keeps running — fix env and redeploy, or use Atlas “Test” connection.');
   }
+}
+
+async function start() {
+  await connectMongo();
 
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`🚀 Server listening on ${PORT}`);
+    console.log(`🚀 Server listening on port ${PORT}`);
   });
 }
 
-start();
+start().catch((err) => {
+  console.error('Fatal startup error:', err);
+  process.exit(1);
+});
