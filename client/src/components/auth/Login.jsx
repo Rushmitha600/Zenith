@@ -38,6 +38,11 @@ const Login = () => {
       setCaptcha(response.data);
       setCaptchaAnswer('');
     } catch (error) {
+      const msg =
+        error.response?.data?.message ||
+        (error.code === 'ERR_NETWORK' ? 'Cannot reach server. Check API URL / internet.' : null) ||
+        'Could not load captcha.';
+      toast.error(msg);
       console.error('Captcha error:', error);
     } finally {
       setCaptchaLoading(false);

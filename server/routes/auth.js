@@ -13,6 +13,18 @@ import Admin from '../models/Admin.js';
 const router = express.Router();
 const JWT_SECRET = 'gigshield_secret_key_2024';
 
+/** Used after captcha + email OTP routes; everything below needs MongoDB. */
+function requireMongo(req, res, next) {
+  if (mongoose.connection.readyState !== 1) {
+    return res.status(503).json({
+      message:
+        'Database not connected. In Render → Environment add MONGODB_URI (MongoDB Atlas). Atlas → Network Access → allow 0.0.0.0/0',
+      mongoReadyState: mongoose.connection.readyState
+    });
+  }
+  next();
+}
+
 // Send Email OTP
 router.post('/send-email-otp', async (req, res) => {
   try {
@@ -77,6 +89,8 @@ router.post('/verify-captcha', (req, res) => {
     res.status(400).json({ success: false, message: result.message });
   }
 });
+
+router.use(requireMongo);
 
 // Register (with email verification check)
 router.post('/register', async (req, res) => {

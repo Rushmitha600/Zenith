@@ -53,7 +53,8 @@ function requireMongo(req, res, next) {
 
 app.use('/api/tracking', trackingRoutes);
 
-app.use('/api/auth', requireMongo, authRoutes);
+// Auth: captcha & email OTP work without DB; DB checks are inside auth.js for login/register/etc.
+app.use('/api/auth', authRoutes);
 app.use('/api/policies', requireMongo, policyRoutes);
 app.use('/api/claims', requireMongo, claimRoutes);
 app.use('/api/admin', requireMongo, adminRoutes);
