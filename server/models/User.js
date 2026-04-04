@@ -37,6 +37,7 @@ const userSchema = new mongoose.Schema({
   },
   deliveryLocations: [deliveryLocationSchema],
   role: { type: String, enum: ['worker', 'admin'], default: 'worker' },
+  isEmailVerified: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now }
 });
 

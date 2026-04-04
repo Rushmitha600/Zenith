@@ -83,7 +83,7 @@ const Register = () => {
     const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
     setGeneratedOtp(newOtp);
     alert(`📧 Your new Email OTP is: ${newOtp}`);
-    toast.info('New OTP sent!');
+    toast.success('New OTP sent!');
   };
 
   const addDeliveryLocation = () => {

@@ -81,36 +81,71 @@ router.post('/verify-captcha', (req, res) => {
 // Register (with email verification check)
 router.post('/register', async (req, res) => {
   try {
-    const { name, email, password, phone, dailyIncome, emailVerified, aadharNumber, panNumber, gigWorkerId, 
-            bankDetails, currentLocation, deliveryLocations } = req.body;
-    
+    const {
+      name,
+      email,
+      password,
+      phone,
+      dailyIncome,
+      emailVerified,
+      aadharNumber,
+      panNumber,
+      gigWorkerId,
+      bankDetails,
+      currentLocation,
+      deliveryLocations
+    } = req.body;
+
     if (!emailVerified) {
       return res.status(400).json({ message: 'Please verify your email first' });
     }
-    
-    const existingUser = await User.findOne({ $or: [{ email }, { phone }] });
+
+    const cleanName = typeof name === 'string' ? name.trim() : '';
+    const cleanEmail = typeof email === 'string' ? email.trim().toLowerCase() : '';
+    const cleanPhone = phone != null ? String(phone).trim() : '';
+
+    if (!cleanName || !cleanEmail || !password || !cleanPhone) {
+      return res.status(400).json({ message: 'Name, email, password, and phone are required' });
+    }
+    if (String(password).length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters' });
+    }
+
+    const existingUser = await User.findOne({
+      $or: [{ email: cleanEmail }, { phone: cleanPhone }]
+    });
     if (existingUser) {
       return res.status(400).json({ message: 'User already exists' });
     }
-    
-    const hashedPassword = await bcrypt.hash(password, 10);
-    
+
+    const hashedPassword = await bcrypt.hash(String(password), 10);
+
+    const income = Number(dailyIncome);
     const user = new User({
-      name, email, password: hashedPassword, phone,
-      dailyIncome: dailyIncome || 0,
-      aadharNumber, panNumber, gigWorkerId,
-      bankDetails, currentLocation, deliveryLocations,
+      name: cleanName,
+      email: cleanEmail,
+      password: hashedPassword,
+      phone: cleanPhone,
+      dailyIncome: Number.isFinite(income) ? income : 0,
+      aadharNumber: aadharNumber ? String(aadharNumber).trim() : '',
+      panNumber: panNumber ? String(panNumber).trim().toUpperCase() : '',
+      gigWorkerId: gigWorkerId ? String(gigWorkerId).trim() : '',
+      bankDetails: bankDetails && typeof bankDetails === 'object' ? bankDetails : undefined,
+      currentLocation: currentLocation && typeof currentLocation === 'object' ? currentLocation : undefined,
+      deliveryLocations: Array.isArray(deliveryLocations) ? deliveryLocations : [],
+      role: 'worker',
       isEmailVerified: true
     });
-    
+
     await user.save();
-    
+
+    const role = user.role || 'worker';
     const token = jwt.sign(
-      { userId: user._id, email: user.email, role: user.role || 'worker' },
+      { userId: String(user._id), email: user.email, role },
       JWT_SECRET,
       { expiresIn: '7d' }
     );
-    
+
     res.status(201).json({
       success: true,
       message: 'Registration successful',
@@ -120,7 +155,7 @@ router.post('/register', async (req, res) => {
         name: user.name,
         email: user.email,
         phone: user.phone,
-        role: user.role || 'worker',
+        role,
         dailyIncome: user.dailyIncome,
         currentLocation: user.currentLocation,
         deliveryLocations: user.deliveryLocations
@@ -128,6 +163,15 @@ router.post('/register', async (req, res) => {
     });
   } catch (error) {
     console.error('Registration error:', error);
+    if (error.code === 11000) {
+      return res.status(400).json({ message: 'User already exists with this email or phone' });
+    }
+    if (error.name === 'ValidationError') {
+      const msg = Object.values(error.errors || {})
+        .map((e) => e.message)
+        .join(' ');
+      return res.status(400).json({ message: msg || 'Validation failed' });
+    }
     res.status(500).json({ message: 'Server error' });
   }
 });
