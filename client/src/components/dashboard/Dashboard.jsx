@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { getMyClaims } from '../../services/api';
 import axios from 'axios';
+import { API_URL } from '../../config/api';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 
@@ -22,12 +23,12 @@ const Dashboard = () => {
       const claimsRes = await getMyClaims();
       setClaims(claimsRes.data || []);
       
-      const paymentsRes = await axios.get('http://localhost:5000/api/auth/upcoming-payments', {
+      const paymentsRes = await axios.get(`${API_URL}/auth/upcoming-payments`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setUpcomingPayments(paymentsRes.data || []);
       
-      const policiesRes = await axios.get('http://localhost:5000/api/auth/my-policies', {
+      const policiesRes = await axios.get(`${API_URL}/auth/my-policies`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -35,7 +36,7 @@ const Dashboard = () => {
       const activePolicies = allPolicies.filter(p => p.status === 'active');
       
       const policiesWithCounts = await Promise.all(activePolicies.map(async (policy) => {
-        const paymentsRes = await axios.get(`http://localhost:5000/api/auth/policy-payments/${policy._id}`, {
+        const paymentsRes = await axios.get(`${API_URL}/auth/policy-payments/${policy._id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         
@@ -72,7 +73,7 @@ const Dashboard = () => {
     setRenewingPolicyId(policyId);
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post('http://localhost:5000/api/auth/renew-policy', 
+      const response = await axios.post(`${API_URL}/auth/renew-policy`, 
         { policyId },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -92,7 +93,7 @@ const Dashboard = () => {
     setPayingPaymentId(paymentId);
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post(`http://localhost:5000/api/auth/pay/${paymentId}`, {}, {
+      const response = await axios.post(`${API_URL}/auth/pay/${paymentId}`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       

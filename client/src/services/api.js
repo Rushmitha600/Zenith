@@ -1,7 +1,5 @@
 import axios from 'axios';
-
-// CHANGE THIS LINE - Use your Render backend URL
-const API_URL = 'https://zenith-4hjz.onrender.com/api';
+import { API_URL } from '../config/api.js';
 
 const api = axios.create({
   baseURL: API_URL,

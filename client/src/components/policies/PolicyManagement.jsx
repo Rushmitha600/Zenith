@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../contexts/AuthContext';
 import axios from 'axios';
+import { API_URL } from '../../config/api';
 
 const PolicyManagement = () => {
   const { user } = useAuth();
@@ -119,7 +120,7 @@ const PolicyManagement = () => {
   try {
     const token = localStorage.getItem('token');
     
-    const response = await axios.post('http://localhost:5000/api/auth/activate-policy', 
+    const response = await axios.post(`${API_URL}/auth/activate-policy`, 
       { planType, premiumAmount },
       { headers: { Authorization: `Bearer ${token}` } }
     );

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { API_URL } from '../../config/api';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
@@ -14,7 +15,7 @@ const PaymentHistoryPage = () => {
     const fetchPaymentHistory = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:5000/api/auth/payment-history', {
+        const response = await axios.get(`${API_URL}/auth/payment-history`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setPayments(response.data);

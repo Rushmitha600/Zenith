@@ -3,6 +3,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import axios from 'axios';
+import { API_URL } from '../../config/api';
 
 const Profile = () => {
   const { user, setUser } = useAuth();
@@ -36,7 +37,7 @@ const Profile = () => {
       console.log('Saving profile data:', updateData);
       
       const response = await axios.put(
-        'http://localhost:5000/api/auth/update-profile',
+        `${API_URL}/auth/update-profile`,
         updateData,
         { headers: { Authorization: `Bearer ${token}` } }
       );

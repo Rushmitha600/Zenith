@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
+import { API_URL } from '../../config/api';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -15,7 +16,7 @@ const PaymentCalendar = () => {
   const fetchPayments = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/api/auth/upcoming-payments', {
+      const response = await axios.get(`${API_URL}/auth/upcoming-payments`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -43,7 +44,7 @@ const PaymentCalendar = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.post(
-        `http://localhost:5000/api/auth/pay/${payment._id}`,
+        `${API_URL}/auth/pay/${payment._id}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';  // Add this line
 import axios from 'axios';
+import { API_URL } from '../../config/api';
 import { useAuth } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
 import { motion } from 'framer-motion';
@@ -64,10 +65,10 @@ const LocationTracker = () => {
     setSelectedLocation(location);
     
     try {
-      const weatherRes = await axios.get(`http://localhost:5000/api/tracking/weather?city=${encodeURIComponent(location.city)}`);
+      const weatherRes = await axios.get(`${API_URL}/tracking/weather?city=${encodeURIComponent(location.city)}`);
       setWeather(weatherRes.data);
       
-      const forecastRes = await axios.get(`http://localhost:5000/api/tracking/forecast?city=${encodeURIComponent(location.city)}`);
+      const forecastRes = await axios.get(`${API_URL}/tracking/forecast?city=${encodeURIComponent(location.city)}`);
       setForecast(forecastRes.data);
       
       toast.success(`Weather for ${location.name} loaded!`);
