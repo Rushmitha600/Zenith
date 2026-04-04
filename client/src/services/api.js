@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+// CHANGE THIS LINE - Use your Render backend URL
 const API_URL = 'https://zenith-4hjz.onrender.com/api';
 
 const api = axios.create({
@@ -17,7 +18,6 @@ api.interceptors.request.use((config) => {
 
 // ============ AUTH APIs ============
 export const register = (data) => api.post('/auth/register', data);
-export const registerAdmin = (data) => api.post('/auth/admin/register', data);
 export const login = (data) => api.post('/auth/login', data);
 export const forgotPassword = (data) => api.post('/auth/forgot-password', data);
 
@@ -28,15 +28,6 @@ export const createPolicy = (data) => api.post('/policies/create', data);
 // ============ CLAIM APIs ============
 export const getMyClaims = () => api.get('/claims/my-claims');
 export const submitClaim = (data) => api.post('/claims/submit', data);
-export const getAdminPendingClaims = () => api.get('/claims/admin/pending');
-export const getAdminVerifiedQueue = () => api.get('/claims/admin/verified-queue');
-export const getAdminApprovedHistory = () => api.get('/claims/admin/approved-history');
-export const verifyClaim = (claimId, adminNotes) =>
-  api.patch(`/claims/admin/${claimId}/verify`, adminNotes !== undefined ? { adminNotes } : {});
-export const approveClaim = (claimId, adminNotes) =>
-  api.patch(`/claims/admin/${claimId}/approve`, adminNotes !== undefined ? { adminNotes } : {});
-export const rejectClaim = (claimId, adminNotes) =>
-  api.patch(`/claims/admin/${claimId}/reject`, adminNotes !== undefined ? { adminNotes } : {});
 export const autoClaim = (weatherData, policyId) => api.post('/claims/auto-claim', { weatherData, policyId });
 
 // ============ TRACKING APIs ============
