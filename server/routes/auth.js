@@ -784,4 +784,5 @@ router.put('/update-profile', verifyToken, async (req, res) => {
   }
 });
 
+
 export default router;
