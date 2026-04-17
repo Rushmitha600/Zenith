@@ -19,10 +19,10 @@ async function createAdmin() {
     await mongoose.connect(MONGODB_URI);
     console.log('✅ Connected to MongoDB');
     
-    const existingAdmin = await Admin.findOne({ email: 'admin@zenith.com' });
+    const existingAdmin = await Admin.findOne({ email: 'admin@zenith➕.com' });
     if (existingAdmin) {
       console.log('⚠️ Admin already exists!');
-      console.log('📧 Email: admin@zenith.com');
+      console.log('📧 Email: admin@zenith➕.com');
       process.exit(0);
     }
     
@@ -30,7 +30,7 @@ async function createAdmin() {
     
     const admin = new Admin({
       name: 'Super Admin',
-      email: 'admin@zenith.com',
+      email: 'admin@zenith➕.com',
       password: hashedPassword,
       phone: '9999999999',
       role: 'admin',
@@ -39,7 +39,7 @@ async function createAdmin() {
     
     await admin.save();
     console.log('✅ Admin created in Admin collection!');
-    console.log('📧 Email: admin@zenith.com');
+    console.log('📧 Email: admin@zenith➕.com');
     console.log('🔑 Password: Admin@123');
     
   } catch (error) {

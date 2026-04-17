@@ -116,7 +116,7 @@ const AdminDashboard = () => {
           <div className="flex justify-between h-16">
             <div className="flex items-center">
               <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                Zenith Admin
+                Zenith➕ Admin
               </span>
             </div>
             <div className="flex items-center space-x-4">

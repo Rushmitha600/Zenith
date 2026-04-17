@@ -99,7 +99,7 @@ const AdminLogin = () => {
         className="max-w-md w-full bg-slate-900/80 border border-slate-700 rounded-2xl shadow-2xl p-8 backdrop-blur"
       >
         <div className="text-center mb-8">
-          <p className="text-indigo-400 text-sm font-semibold tracking-wide uppercase mb-2">Zenith</p>
+          <p className="text-indigo-400 text-sm font-semibold tracking-wide uppercase mb-2">Zenith➕</p>
           <h2 className="text-3xl font-bold text-white">Admin sign in</h2>
           <p className="text-slate-400 mt-2">Verify and approve worker claims</p>
         </div>

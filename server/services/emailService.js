@@ -8,8 +8,8 @@ const smtpPort = Number(process.env.EMAIL_PORT || 587);
 const smtpSecure = process.env.EMAIL_SECURE === 'true';
 const smtpUser = process.env.EMAIL_USER;
 const smtpPass = process.env.EMAIL_PASS;
-const fromName = process.env.EMAIL_FROM_NAME || 'Zenith';
-const fromAddress = process.env.EMAIL_FROM_ADDRESS || 'noreply@zenith.com';
+const fromName = process.env.EMAIL_FROM_NAME || 'Zenith➕';
+const fromAddress = process.env.EMAIL_FROM_ADDRESS || 'noreply@zenith➕.com';
 
 let transporterPromise = null;
 let usingTestAccount = false;
@@ -69,10 +69,10 @@ export const sendEmailOTP = async (email) => {
     const info = await transporter.sendMail({
       from: `"${fromName}" <${fromAddress}>`,
       to: email,
-      subject: 'Zenith Email Verification OTP',
+      subject: 'Zenith➕ Email Verification OTP',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px;">
-          <h2 style="color: #2563eb; text-align: center;">Zenith</h2>
+          <h2 style="color: #2563eb; text-align: center;">Zenith➕</h2>
           <h3 style="text-align: center;">Email Verification</h3>
           <p style="font-size: 16px;">Hello,</p>
           <p style="font-size: 16px;">Your OTP for email verification is:</p>
@@ -81,7 +81,7 @@ export const sendEmailOTP = async (email) => {
           </div>
           <p style="font-size: 14px; color: #6b7280;">This OTP is valid for 10 minutes. Please do not share it with anyone.</p>
           <hr style="margin: 20px 0; border-color: #e0e0e0;" />
-          <p style="font-size: 12px; color: #9ca3af; text-align: center;">Zenith - Elevating GIG Insurance Standards</p>
+          <p style="font-size: 12px; color: #9ca3af; text-align: center;">Zenith➕ - Elevating GIG Insurance Standards</p>
         </div>
       `
     });

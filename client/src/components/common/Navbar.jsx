@@ -24,7 +24,7 @@ const Navbar = () => {
             <Link to="/" className={`text-2xl font-bold ${
               darkMode ? 'text-blue-400' : 'text-blue-600'
             }`}>
-              ▲ Zenith
+              ▲ Zenith➕
             </Link>
             {user && (
               <div className="ml-10 flex space-x-4">

@@ -79,7 +79,7 @@ const LandingPage = () => {
           <div className="flex justify-between h-16">
             <div className="flex items-center">
               <motion.h1 initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                ▲ Zenith
+                ▲ Zenith➕
               </motion.h1>
             </div>
             <div className="flex items-center space-x-4">
@@ -195,7 +195,7 @@ const LandingPage = () => {
       {/* Features Section */}
       <div id="features" className="bg-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12"><h2 className="text-3xl font-bold text-gray-900 mb-4">Why Choose Zenith?</h2><p className="text-xl text-gray-600">Elevating GIG Insurance Standards</p></div>
+          <div className="text-center mb-12"><h2 className="text-3xl font-bold text-gray-900 mb-4">Why Choose Zenith➕?</h2><p className="text-xl text-gray-600">Elevating GIG Insurance Standards</p></div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {features.map((feature, idx) => (
               <motion.div key={idx} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }} className="text-center p-6 rounded-xl hover:shadow-lg transition">
@@ -266,12 +266,12 @@ const LandingPage = () => {
       <footer className="bg-gray-900 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div><h3 className="text-xl font-bold mb-4">▲ Zenith</h3><p className="text-gray-400 text-sm">Elevating GIG Insurance Standards</p></div>
+            <div><h3 className="text-xl font-bold mb-4">▲ Zenith➕</h3><p className="text-gray-400 text-sm">Elevating GIG Insurance Standards</p></div>
             <div><h4 className="font-semibold mb-4">Product</h4><ul className="space-y-2 text-sm text-gray-400"><li><a href="#features" className="hover:text-white">Features</a></li><li><a href="#" className="hover:text-white">Pricing</a></li><li><a href="#" className="hover:text-white">FAQ</a></li></ul></div>
             <div><h4 className="font-semibold mb-4">Support</h4><ul className="space-y-2 text-sm text-gray-400"><li><a href="#" className="hover:text-white">Help Center</a></li><li><a href="#" className="hover:text-white">Contact Us</a></li><li><a href="#" className="hover:text-white">Status</a></li><li><Link to="/admin/login" className="hover:text-white">Admin portal</Link></li></ul></div>
             <div><h4 className="font-semibold mb-4">Legal</h4><ul className="space-y-2 text-sm text-gray-400"><li><a href="#" className="hover:text-white">Privacy Policy</a></li><li><a href="#" className="hover:text-white">Terms of Service</a></li><li><a href="#" className="hover:text-white">Cookie Policy</a></li></ul></div>
           </div>
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400"><p> 2026 Zenith. Elevating GIG Insurance Standards</p></div>
+          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400"><p> 2026 Zenith➕. Elevating GIG Insurance Standards</p></div>
         </div>
       </footer>
     </div>

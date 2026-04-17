@@ -34,7 +34,7 @@ const SplashScreen = () => {
         transition={{ duration: 0.6, delay: 0.3 }}
         className="text-5xl md:text-6xl font-bold text-white text-center mb-3 tracking-wider"
       >
-        ZENITH
+        ZENITH➕
       </motion.h1>
 
       {/* Subtitle */}
