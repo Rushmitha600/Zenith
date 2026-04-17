@@ -1,4 +1,4 @@
-# Zenith - AI-Powered Insurance for Gig Workers
+# Zenith➕ - AI-Powered Insurance for Gig Workers
 
 ## 🚀 Features
 
