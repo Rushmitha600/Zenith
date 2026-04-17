@@ -743,4 +743,45 @@ router.post('/admin/login', async (req, res) => {
   }
 });
 
+
+// Update Profile - Add this at the bottom of auth.js (before export default router)
+router.put('/update-profile', verifyToken, async (req, res) => {
+  try {
+    const { name, phone, dailyIncome, currentLocation, deliveryLocations } = req.body;
+    
+    // Find user by ID from token
+    const user = await User.findById(req.userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+    // Update fields (only if provided)
+    if (name) user.name = name;
+    if (phone) user.phone = phone;
+    if (dailyIncome !== undefined) user.dailyIncome = dailyIncome;
+    if (currentLocation) user.currentLocation = currentLocation;
+    if (deliveryLocations) user.deliveryLocations = deliveryLocations;
+    
+    await user.save();
+    
+    res.json({
+      success: true,
+      message: 'Profile updated successfully',
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
+        dailyIncome: user.dailyIncome,
+        currentLocation: user.currentLocation,
+        deliveryLocations: user.deliveryLocations
+      }
+    });
+  } catch (error) {
+    console.error('Update profile error:', error);
+    res.status(500).json({ message: 'Server error: ' + error.message });
+  }
+});
+
 export default router;
